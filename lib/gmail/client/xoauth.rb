@@ -4,26 +4,17 @@ module Gmail
   module Client
     class XOAuth < Base
       attr_reader :token
-      attr_reader :secret
-      attr_reader :consumer_key
-      attr_reader :consumer_secret
-
+      attr_reader :email
+      
       def initialize(username, options={})
         @token           = options.delete(:token)
-        @secret          = options.delete(:secret)
-        @consumer_key    = options.delete(:consumer_key)
-        @consumer_secret = options.delete(:consumer_secret)
-       
+        @email           = options.delete(:email)
+
         super(username, options)
       end
 
       def login(raise_errors=false)
-        @imap and @logged_in = (login = @imap.authenticate('XOAUTH', username,
-          :consumer_key    => consumer_key,
-          :consumer_secret => consumer_secret,
-          :token           => token,
-          :token_secret    => secret
-        )) && login.name == 'OK'
+        @imap and @logged_in = (login = @imap.authenticate('XOAUTH', username, token)) && login.name == 'OK'
       rescue
         raise_errors and raise AuthorizationError, "Couldn't login to given GMail account: #{username}"        
       end
